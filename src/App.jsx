@@ -21,21 +21,12 @@ export const goodsFromServer = [
 const SORT_FIELD_BY_ALPHABET = 'alphabet';
 const SORT_FIELD_BY_LENGTH = 'length';
 
-// Filter fields names
-const FILTER_FIELD_BY_REVERSE = 'reverse';
-
 export const App = () => {
   // Mutually exclusive filters (only one active at a time)
   const [sortBy, setSortBy] = useState(null);
-
-  // Combinable filters
-  const [filterBy, setFilterBy] = useState([]);
+  const [isReversed, setIsReversed] = useState(false);
 
   const preparedGoods = [...goodsFromServer];
-
-  const isFilterApplied = filter => {
-    return filterBy.includes(filter);
-  };
 
   if (sortBy === SORT_FIELD_BY_ALPHABET) {
     preparedGoods.sort((a, b) => a.localeCompare(b));
@@ -45,21 +36,17 @@ export const App = () => {
     preparedGoods.sort((a, b) => a.length - b.length);
   }
 
-  if (isFilterApplied(FILTER_FIELD_BY_REVERSE)) {
+  if (isReversed) {
     preparedGoods.reverse();
   }
 
-  const toggleFilter = filter => {
-    if (isFilterApplied(filter)) {
-      setFilterBy(prevFilterBy => prevFilterBy.filter(i => i !== filter));
-    } else {
-      setFilterBy(prevFilterBy => [...prevFilterBy, filter]);
-    }
+  const toggleReverse = () => {
+    setIsReversed(prevState => !prevState);
   };
 
   const resetAll = () => {
     setSortBy(null);
-    setFilterBy([]);
+    setIsReversed(false);
   };
 
   return (
@@ -92,14 +79,14 @@ export const App = () => {
         <button
           type="button"
           className={cn('button', 'is-warning', {
-            'is-light': !isFilterApplied(FILTER_FIELD_BY_REVERSE),
+            'is-light': !isReversed,
           })}
-          onClick={() => toggleFilter(FILTER_FIELD_BY_REVERSE)}
+          onClick={() => toggleReverse()}
         >
           Reverse
         </button>
 
-        {(filterBy.length > 0 || sortBy !== null) && (
+        {(isReversed || sortBy !== null) && (
           <button
             type="button"
             className="button is-danger is-light"
