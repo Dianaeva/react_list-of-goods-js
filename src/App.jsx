@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import cn from 'classnames';
 
 import 'bulma/css/bulma.css';
@@ -26,19 +26,23 @@ export const App = () => {
   const [sortBy, setSortBy] = useState(null);
   const [isReversed, setIsReversed] = useState(false);
 
-  const preparedGoods = [...goodsFromServer];
+  const preparedGoods = useMemo(() => {
+    const goods = [...goodsFromServer];
 
-  if (sortBy === SORT_FIELD_BY_ALPHABET) {
-    preparedGoods.sort((a, b) => a.localeCompare(b));
-  }
+    if (sortBy === SORT_FIELD_BY_ALPHABET) {
+      goods.sort((a, b) => a.localeCompare(b));
+    }
 
-  if (sortBy === SORT_FIELD_BY_LENGTH) {
-    preparedGoods.sort((a, b) => a.length - b.length);
-  }
+    if (sortBy === SORT_FIELD_BY_LENGTH) {
+      goods.sort((a, b) => a.length - b.length);
+    }
 
-  if (isReversed) {
-    preparedGoods.reverse();
-  }
+    if (isReversed) {
+      goods.reverse();
+    }
+
+    return goods;
+  }, [sortBy, isReversed]);
 
   const toggleReverse = () => {
     setIsReversed(prevState => !prevState);
